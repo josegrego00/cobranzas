@@ -1,0 +1,42 @@
+# --- General ---
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# --- Node / React ---
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- SCSS / CSS ---
+*.css.map
+*.sass-cache
+
+# --- Java / Spring Boot ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.project
+*.classpath
+*.settings/
+out/
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS ---
+*.bak
+*.pid

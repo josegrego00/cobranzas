@@ -1,0 +1,11 @@
+.text {
+  font-size: 1rem;
+
+  &__highlight {
+    transition: color 0.3s ease;
+
+    &--bold {
+      font-weight: bold;
+    }
+  }
+}
