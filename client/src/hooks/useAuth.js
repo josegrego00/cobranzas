@@ -8,12 +8,16 @@ const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/superadmin/empresas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      if (response.ok) alert("¡Usuario registrado!");
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`¡Empresa "${data.nombreTenant}" creada con éxito!`);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
