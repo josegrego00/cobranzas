@@ -1,4 +1,5 @@
 package com.cobranzasapi.saas.services;
+
 /*
  * FLUJO COMPLETO:
  *
@@ -18,7 +19,8 @@ package com.cobranzasapi.saas.services;
  *
  * CONCLUSION: Yo creo la empresa, mi amigo la usa automaticamente.
  */
-import com.cobranzasapi.saas.dto.CrearEmpresaRequest;
+
+import com.cobranzasapi.saas.dto.TenantDTORequest;
 import com.cobranzasapi.saas.models.Tenant;
 import com.cobranzasapi.saas.models.Usuario;
 import com.cobranzasapi.saas.repo.TenantRepositorio;
@@ -31,13 +33,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
-public class EmpresaService {
+public class TenantService {
 
     private final TenantRepositorio tenantRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
 
     @Transactional
-    public Tenant crearEmpresa(CrearEmpresaRequest req) {
+    public Tenant crearEmpresa(TenantDTORequest req) {
 
         // 1. Validar que el subdominio no exista ya
         if (tenantRepositorio.findBySubdominio(req.getSubdominio()).isPresent()) {
@@ -57,10 +59,10 @@ public class EmpresaService {
         if (req.isCrearUsuarioAdmin()) {
             Usuario admin = Usuario.builder()
                     .nombre("Admin " + req.getNombreEmpresa())
-                    .email(req.getEmailContacto())
+                    .email(req.getEmail())
                     .password("changeme123") // idealmente encriptar con BCrypt
                     .rol("ADMIN")
-                    .tenantId(tenant.getId())
+                    .tenant(tenant)
                     .build();
 
             usuarioRepositorio.save(admin);

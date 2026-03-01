@@ -5,15 +5,21 @@ que no son columnas de la base de datos. Si recibo directo el Tenant, esos datos
 
 package com.cobranzasapi.saas.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class CrearEmpresaRequest {
+@AllArgsConstructor
+@NoArgsConstructor
+public class TenantDTORequest {
+
+    
     private String nombreEmpresa;
     private String subdominio;
-    private String emailContacto;
+    private String email;
     private String telefono;
-    private String plan;
+    private String planServicio;
     private boolean crearUsuarioAdmin;
     private boolean crearDatosIniciales;
 }
