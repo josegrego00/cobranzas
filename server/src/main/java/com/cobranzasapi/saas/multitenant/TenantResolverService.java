@@ -1,11 +1,12 @@
 package com.cobranzasapi.saas.multitenant;
-
+import org.springframework.stereotype.Service; 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cobranzasapi.saas.models.Tenant;
 import com.cobranzasapi.saas.repo.TenantRepositorio;
 
+@Service 
 public class TenantResolverService {
 
     // esta clase se encarga de resolver el tenantId a partir del subdominio
