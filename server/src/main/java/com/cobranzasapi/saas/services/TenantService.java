@@ -20,13 +20,14 @@ package com.cobranzasapi.saas.services;
  * CONCLUSION: Yo creo la empresa, mi amigo la usa automaticamente.
  */
 
-import com.cobranzasapi.saas.dto.TenantDTORequest;
+import com.cobranzasapi.saas.DTO.TenantDTORequest;
 import com.cobranzasapi.saas.models.Tenant;
 import com.cobranzasapi.saas.models.Usuario;
 import com.cobranzasapi.saas.repo.TenantRepositorio;
 import com.cobranzasapi.saas.repo.UsuarioRepositorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,42 +38,50 @@ public class TenantService {
 
     private final TenantRepositorio tenantRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Tenant crearEmpresa(TenantDTORequest req) {
+    public Tenant crearTenant(TenantDTORequest request) {
 
-        // 1. Validar que el subdominio no exista ya
-        if (tenantRepositorio.findBySubdominio(req.getSubdominio()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "El subdominio ya está en uso");
-        }
+        // 1. Validar subdominio único
+        validarSubdominioUnico(request.getSubdominio());
 
-        // 2. Crear el Tenant
-        Tenant tenant = Tenant.builder()
-                .nombreTenant(req.getNombreEmpresa())
-                .subdominio(req.getSubdominio().toLowerCase())
-                .activo(true)
-                .build();
-
+        // 2. Crear y guardar tenant
+        Tenant tenant = construirTenant(request);
         tenant = tenantRepositorio.save(tenant);
 
-        // 3. Si marcó "Crear usuario administrador", crear uno por defecto
-        if (req.isCrearUsuarioAdmin()) {
-            Usuario admin = Usuario.builder()
-                    .nombre("Admin " + req.getNombreEmpresa())
-                    .email(req.getEmail())
-                    .password("changeme123") // idealmente encriptar con BCrypt
-                    .rol("ADMIN")
-                    .tenant(tenant)
-                    .build();
-
-            usuarioRepositorio.save(admin);
-        }
-
-        // 4. Si marcó "Crear datos iniciales" puedes agregar lógica extra aquí
-        if (req.isCrearDatosIniciales()) {
-            // ej: crear clientes de prueba, configuraciones base, etc.
-        }
+        // 3. Crear usuario administrador por defecto
+        crearUsuarioAdminPorDefecto(request, tenant);
 
         return tenant;
+    }
+
+    private void validarSubdominioUnico(String subdominio) {
+        if (tenantRepositorio.findBySubdominio(subdominio).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "El subdominio ya está en uso");
+        }
+    }
+
+    private Tenant construirTenant(TenantDTORequest request) {
+        return Tenant.builder()
+                .nombreTenant(request.getNombreEmpresa())
+                .subdominio(request.getSubdominio().toLowerCase())
+                .email(request.getEmail())
+                .planServicio(request.getPlanServicio())
+                .activo(true)
+                .build();
+    }
+
+    private void crearUsuarioAdminPorDefecto(TenantDTORequest request, Tenant tenant) {
+        Usuario admin = Usuario.builder()
+                .nombre("Administrador")
+                .email(request.getEmail())
+                .password(passwordEncoder.encode("admin123"))
+                .rol("ADMIN_TENANT")
+                .tenant(tenant)
+                .build();
+
+        usuarioRepositorio.save(admin);
     }
 }
