@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.cobranzasapi.saas.models.Tenant;
 
 public interface TenantRepositorio extends JpaRepository<Tenant, Long> {
+    boolean existsBySubdominio(String subdominio);
 
     // esta interfaz se encarga de acceder a la base de datos para obtener el tenant
     // a partir del subdominio
