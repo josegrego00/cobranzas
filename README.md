@@ -5,6 +5,7 @@
 # 🚀 Cómo levantar el proyecto
 
 Este proyecto cuenta con un **Backend (Spring Boot)** y un **Frontend (React/Vite + Storybook)**. 
+
 ---
 
 ## 🖥️ Backend - Spring Boot (Maven)
@@ -86,5 +87,6 @@ Y si vas a modificar o crear componentes, abre una **segunda pestaña en tu term
 
 ```bash
 npm run storybook
+```
 ```
 ```
