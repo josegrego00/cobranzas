@@ -3,10 +3,30 @@ import Button from "../../01-atoms/Button/Button";
 import styles from "./RegisterForm.module.scss";
 
 const FIELDS = [
-  { name: "nombreEmpresa", label: "Nombre de la Empresa", type: "text",  placeholder: "Acme S.A." },
-  { name: "subdominio",    label: "Subdominio",           type: "text",  placeholder: "acme" },
-  { name: "emailContacto", label: "Email de Contacto",   type: "email", placeholder: "admin@acme.com" },
-  { name: "telefono",      label: "Teléfono",             type: "text",  placeholder: "3001234567" },
+  {
+    name: "nombreEmpresa",
+    label: "Nombre de la Empresa",
+    type: "text",
+    placeholder: "Acme S.A.",
+  },
+  {
+    name: "subdominio",
+    label: "Subdominio",
+    type: "text",
+    placeholder: "acme",
+  },
+  {
+    name: "email",
+    label: "Email de Contacto",
+    type: "email",
+    placeholder: "admin@acme.com",
+  },
+  {
+    name: "telefono",
+    label: "Teléfono",
+    type: "text",
+    placeholder: "3001234567",
+  },
 ];
 
 const RegisterForm = ({ values, onChange, onSubmit, loading }) => {

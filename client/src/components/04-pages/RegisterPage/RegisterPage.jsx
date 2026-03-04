@@ -3,15 +3,15 @@ import RegisterForm from "../../03-organisms/RegisterForm/RegisterForm";
 import useAuth from "../../../hooks/useAuth";
 
 const RegisterPage = () => {
-  const [values, setValues] = useState({
+const [values, setValues] = useState({
     nombreEmpresa: "",
     subdominio: "",
-    emailContacto: "",
+    email: "",       
     telefono: "",
-    plan: "Básico",
+    planServicio: "Básico",  
     crearUsuarioAdmin: true,
     crearDatosIniciales: true,
-  });
+});
 
   const { register, loading } = useAuth();
 
