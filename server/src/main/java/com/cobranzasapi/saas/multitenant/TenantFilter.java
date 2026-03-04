@@ -26,17 +26,12 @@ public class TenantFilter extends OncePerRequestFilter {
         this.resolver = resolver;
     }
 
-
-    /*  esto no lo comprendo para que se usa
-    ----------------- pregiuntarle a Johan -----------------------
-
-
-     * @Override
-     * protected boolean shouldNotFilter(HttpServletRequest request) {
-     * String path = request.getRequestURI();
-     * return path.startsWith("/superadmin/");
-     * }
-     */
+      @Override
+      protected boolean shouldNotFilter(HttpServletRequest request) {
+      String path = request.getRequestURI();
+      return path.startsWith("/superadmin/") ||
+      path.startsWith("/api/auth/");
+      }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
