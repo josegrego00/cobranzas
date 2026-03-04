@@ -1,5 +1,9 @@
 # cobranzas
 
+## 🎨 Diseño en Figma  
+[Figma Project](https://www.figma.com/design/vL2vTcdrXw8leNFWbbP5pj/Untitled?t=IUTGUjYwjzGPReWQ-0)
+
+---
 
 ```markdown
 # 🚀 Cómo levantar el proyecto

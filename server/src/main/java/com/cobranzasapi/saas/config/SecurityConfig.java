@@ -36,11 +36,11 @@ public class SecurityConfig {
 
                 // 3. LA PARTE IMPORTANTE: Abrir la puerta del registro
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // <-- AQUÍ: No pide contraseña para registrar
-                        .requestMatchers("/superadmin/**").permitAll() //
-                        .anyRequest().authenticated() // El resto de la app sí sigue bloqueada
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/superadmin/**").permitAll()
+                    .requestMatchers("/api/subdominios/**").permitAll() 
+                    .anyRequest().authenticated()
                 );
-
         return http.build();
     }
 }
