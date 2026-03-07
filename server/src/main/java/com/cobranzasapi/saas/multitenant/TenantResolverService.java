@@ -21,7 +21,7 @@ public class TenantResolverService {
 
     public Long resolveTenantId(String subdominio) {
 
-        if (subdominio == null || subdominio.isBlank()) {
+        if (subdominio == null) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Subdominio inválido");
         }

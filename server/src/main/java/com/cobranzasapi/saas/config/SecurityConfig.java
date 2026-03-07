@@ -36,11 +36,10 @@ public class SecurityConfig {
 
                 // 3. LA PARTE IMPORTANTE: Abrir la puerta del registro
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/superadmin/**").permitAll()
-                    .requestMatchers("/api/subdominios/**").permitAll() 
-                    .anyRequest().authenticated()
-                );
+                        .anyRequest().permitAll())
+                // Deshabilitar autenticación básica
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable());
         return http.build();
     }
 }

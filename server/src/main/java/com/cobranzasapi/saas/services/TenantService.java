@@ -23,9 +23,13 @@ package com.cobranzasapi.saas.services;
 import com.cobranzasapi.saas.DTO.TenantDTORequest;
 import com.cobranzasapi.saas.models.Tenant;
 import com.cobranzasapi.saas.models.Usuario;
+import com.cobranzasapi.saas.multitenant.TenantContext;
 import com.cobranzasapi.saas.repo.TenantRepositorio;
 import com.cobranzasapi.saas.repo.UsuarioRepositorio;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -83,5 +87,22 @@ public class TenantService {
                 .build();
 
         usuarioRepositorio.save(admin);
+    }
+
+    public List<Usuario> obtenerUsuariosPorEmpresa() {
+        // Obtener tenantId del contexto (lo que puso tu amigo en TenantFilter)
+        Long tenantId = TenantContext.getTenantId();
+
+        if (tenantId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se pudo identificar el tenant");
+        }
+
+        // Buscar tenant por subdominio (asumiendo que tenantId es el subdominio)
+        Tenant tenant = tenantRepositorio.findById(tenantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Tenant no encontrado: " + tenantId));
+
+        return usuarioRepositorio.findAll();
     }
 }

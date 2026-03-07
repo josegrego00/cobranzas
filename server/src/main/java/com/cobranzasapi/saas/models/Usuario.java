@@ -59,12 +59,12 @@ public class Usuario {
 
     @Column(nullable = false)
     private String rol;
-
+/*
     @TenantId
     @Column(name = "tenant_id", nullable = false, updatable = false)
     private String tenantId;
-
+*/
     @ManyToOne
-    @JoinColumn(name = "tenant_id", insertable = false, updatable = false)
+    @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;  
 }
