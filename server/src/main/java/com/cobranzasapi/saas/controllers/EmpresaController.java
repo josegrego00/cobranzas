@@ -1,8 +1,7 @@
 package com.cobranzasapi.saas.controllers;
 
-import com.cobranzasapi.saas.DTO.TenantDTORequest;
-import com.cobranzasapi.saas.models.Tenant;
-import com.cobranzasapi.saas.models.Usuario;
+import com.cobranzasapi.saas.DTO.TenantDTO;
+import com.cobranzasapi.saas.DTO.UsuarioDTOResponse;
 import com.cobranzasapi.saas.services.TenantService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,14 +20,14 @@ public class EmpresaController {
     private final TenantService empresaService;
 
     @PostMapping("/crear-tenant")
-    public ResponseEntity<Tenant> crearTenant(@RequestBody TenantDTORequest request) {
-        Tenant creado = empresaService.crearTenant(request);
+    public ResponseEntity<TenantDTO> crearTenant(@RequestBody TenantDTO request) {
+        TenantDTO creado = empresaService.crearTenant(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
     @GetMapping("/empresa/usuarios")
-    public ResponseEntity<List<Usuario>> obtenerUsuariosPorEmpresa() {
-        List<Usuario> usuarios = empresaService.obtenerUsuariosPorEmpresa();
+    public ResponseEntity<List<UsuarioDTOResponse>> obtenerUsuariosPorEmpresa() {
+        List<UsuarioDTOResponse> usuarios = empresaService.obtenerUsuariosPorEmpresa();
         return ResponseEntity.ok(usuarios);
     }
 

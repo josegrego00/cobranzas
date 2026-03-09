@@ -1,26 +1,9 @@
 package com.cobranzasapi.saas.services;
 
-/*
- * FLUJO COMPLETO:
- *
- * 1. El superadmin llena el formulario y hace POST /superadmin/empresas
- *
- * 2. Este servicio guarda el Tenant en la BD con su subdominio
- *    ejemplo: nombreTenant="Acme", subdominio="acme", activo=true
- *
- * 3. Cuando un usuario entre a acme.localhost/...
- *    → TenantFilter (de mi amigo) detecta el subdominio "acme"
- *    → TenantResolverService (de mi amigo) busca "acme" en la BD
- *    → Encuentra el Tenant que YO cree aqui
- *    → TenantContext guarda el tenantId para toda la peticion
- *
- * SIN este servicio, el filtro Jose siempre devolveria
- * 404 "Tenant no encontrado" porque no habria nada en la BD.
- *
- * CONCLUSION: Yo creo la empresa, mi amigo la usa automaticamente.
- */
-
-import com.cobranzasapi.saas.DTO.TenantDTORequest;
+import com.cobranzasapi.saas.DTO.TenantDTO;
+import com.cobranzasapi.saas.DTO.UsuarioDTOResponse;
+import com.cobranzasapi.saas.mapper.TenantMapper;
+import com.cobranzasapi.saas.mapper.UsuarioMapper;
 import com.cobranzasapi.saas.models.Tenant;
 import com.cobranzasapi.saas.models.Usuario;
 import com.cobranzasapi.saas.multitenant.TenantContext;
@@ -29,6 +12,7 @@ import com.cobranzasapi.saas.repo.UsuarioRepositorio;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,21 +27,25 @@ public class TenantService {
     private final TenantRepositorio tenantRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
     private final PasswordEncoder passwordEncoder;
+    private final TenantMapper tenantMapper;
+    private final UsuarioMapper usuarioMapper;
 
     @Transactional
-    public Tenant crearTenant(TenantDTORequest request) {
+    public TenantDTO crearTenant(TenantDTO request) {
 
         // 1. Validar subdominio único
         validarSubdominioUnico(request.getSubdominio());
 
-        // 2. Crear y guardar tenant
-        Tenant tenant = construirTenant(request);
+        // 2. Convertir DTO → Entidad y guardar
+        Tenant tenant = tenantMapper.toEntity(request);
+        tenant.setActivo(true); // Aseguramos que esté activo
         tenant = tenantRepositorio.save(tenant);
 
         // 3. Crear usuario administrador por defecto
         crearUsuarioAdminPorDefecto(request, tenant);
 
-        return tenant;
+        // 4. Convertir Entidad → DTO y devolver
+        return tenantMapper.toDTO(tenant);
     }
 
     private void validarSubdominioUnico(String subdominio) {
@@ -67,17 +55,7 @@ public class TenantService {
         }
     }
 
-    private Tenant construirTenant(TenantDTORequest request) {
-        return Tenant.builder()
-                .nombreTenant(request.getNombreEmpresa())
-                .subdominio(request.getSubdominio().toLowerCase())
-                .email(request.getEmail())
-                .planServicio(request.getPlanServicio())
-                .activo(true)
-                .build();
-    }
-
-    private void crearUsuarioAdminPorDefecto(TenantDTORequest request, Tenant tenant) {
+    private void crearUsuarioAdminPorDefecto(TenantDTO request, Tenant tenant) {
         Usuario admin = Usuario.builder()
                 .nombre("Administrador")
                 .email(request.getEmail())
@@ -89,20 +67,65 @@ public class TenantService {
         usuarioRepositorio.save(admin);
     }
 
-    public List<Usuario> obtenerUsuariosPorEmpresa() {
-        // Obtener tenantId del contexto (lo que puso tu amigo en TenantFilter)
+    @Transactional(readOnly = true)
+    public List<UsuarioDTOResponse> obtenerUsuariosPorEmpresa() {
+
+        // Obtener tenantId del contexto
         Long tenantId = TenantContext.getTenantId();
+        System.out.println("📌 Tenant ID: " + tenantId);
 
         if (tenantId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "No se pudo identificar el tenant");
         }
 
-        // Buscar tenant por subdominio (asumiendo que tenantId es el subdominio)
-        Tenant tenant = tenantRepositorio.findById(tenantId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Tenant no encontrado: " + tenantId));
+        // Buscar usuarios y convertir a DTO
+        List<Usuario> usuarios = usuarioRepositorio.findByTenantId(tenantId);
+        
+        return usuarios.stream()
+                .map(usuarioMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 
-        return usuarioRepositorio.findAll();
+    @Transactional(readOnly = true)
+    public TenantDTO obtenerTenantPorId(Long id) {
+        Tenant tenant = tenantRepositorio.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Tenant no encontrado"));
+        return tenantMapper.toDTO(tenant);
+    }
+
+    @Transactional(readOnly = true)
+    public TenantDTO obtenerMiTenant() {
+        Long tenantId = TenantContext.getTenantId();
+        
+        if (tenantId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se pudo identificar el tenant");
+        }
+        
+        return obtenerTenantPorId(tenantId);
+    }
+
+    @Transactional
+    public TenantDTO actualizarTenant(Long id, TenantDTO request) {
+        Tenant tenant = tenantRepositorio.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Tenant no encontrado"));
+        
+        // Actualizar campos permitidos
+        if (request.getNombreTenant() != null) {
+            tenant.setNombreTenant(request.getNombreTenant());
+        }
+        if (request.getTelefono() != null) {
+            tenant.setTelefono(request.getTelefono());
+        }
+        if (request.getPlanServicio() != null) {
+            tenant.setPlanServicio(request.getPlanServicio());
+        }
+        // No permitir actualizar email, subdominio por seguridad
+        
+        tenant = tenantRepositorio.save(tenant);
+        return tenantMapper.toDTO(tenant);
     }
 }

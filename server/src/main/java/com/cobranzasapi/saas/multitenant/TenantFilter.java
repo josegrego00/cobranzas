@@ -26,13 +26,13 @@ public class TenantFilter extends OncePerRequestFilter {
         this.resolver = resolver;
     }
 
-      @Override
-      protected boolean shouldNotFilter(HttpServletRequest request) {
-      String path = request.getRequestURI();
-      return path.startsWith("/superadmin/") ||
-      path.startsWith("/api/auth/") ||
-      path.startsWith("/api/subdominios/");
-      }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/superadmin/crear-tenant") ||
+                path.startsWith("/api/auth/") ||
+                path.startsWith("/api/subdominios/");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

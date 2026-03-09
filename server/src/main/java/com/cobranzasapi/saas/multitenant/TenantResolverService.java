@@ -38,6 +38,6 @@ public class TenantResolverService {
                     "Tenant inactivo");
         }
 
-        return tenant.getId();
+        return tenant.getId ();
     }
 }
