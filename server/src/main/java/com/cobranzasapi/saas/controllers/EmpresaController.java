@@ -4,6 +4,7 @@ import com.cobranzasapi.saas.DTO.TenantDTO;
 import com.cobranzasapi.saas.DTO.UsuarioDTOResponse;
 import com.cobranzasapi.saas.services.TenantService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class EmpresaController {
     private final TenantService empresaService;
 
     @PostMapping("/crear-tenant")
-    public ResponseEntity<TenantDTO> crearTenant(@RequestBody TenantDTO request) {
+    public ResponseEntity<TenantDTO> crearTenant(@RequestBody @Valid TenantDTO request) {
         TenantDTO creado = empresaService.crearTenant(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
