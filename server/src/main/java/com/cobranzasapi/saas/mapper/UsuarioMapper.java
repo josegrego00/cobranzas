@@ -24,7 +24,6 @@ public interface UsuarioMapper {
     @Mapping(source = "tenant.subdominio", target = "tenantSubdominio")
     UsuarioDTOResponse toResponse(Usuario usuario);
 
-    // ⚠️ ESTE MÉTODO ES EL QUE FALTABA ⚠️
     default Tenant tenantIdToEntity(Long tenantId) {
         if (tenantId == null)
             return null;
