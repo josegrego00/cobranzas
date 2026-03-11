@@ -51,8 +51,8 @@ const RegisterForm = ({
                         <button onClick={onElegirSubdominio} style={{ marginTop: "6px", fontSize: "13px" }}>
                             Elegir este subdominio
                         </button>
-                    </>
-                )}
+                    </> 
+                )} 
                 {subdominioConfirmado && <p style={{ color: "green", fontSize: "12px", margin: "4px 0" }}>✅ Confirmado</p>}
             </div>
 
