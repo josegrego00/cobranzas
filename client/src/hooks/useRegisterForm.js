@@ -33,22 +33,28 @@ const schema = z.object({
 
 const useRegisterForm = () => {
   // errors guarda los mensajes por campo
-  // ejemplo: { email: ["Ingresa un email válido"] }
   const [errors, setErrors] = useState({});
 
-  // validate — llámala al hacer submit
-  // devuelve true si todo está bien, false si hay errores
   const validate = (values) => {
     const result = schema.safeParse(values);
 
     if (!result.success) {
-      // treeifyError() convierte los errores al formato { campo: ["mensaje"] }
-      setErrors(z.treeifyError(result.error));
-      return false; // hay errores, no envíes
+      const errores = z.treeifyError(result.error);
+      console.log("valores que llegaron →", values);  // ver qué datos tiene el form
+      console.log("errores Zod →", errores);           // ver la estructura exacta de los errores
+
+      // ANTES: setErrors(errores)
+      // fallaba porque treeifyError devuelve { errors:[], properties:{ campo:{ errors:[] } } }
+      // y en el organismo leíamos errors.nombreEmpresa que no existe en la raíz
+      // AHORA: guardamos solo .properties para acceder directo a cada campo sin escribir
+      // errors.properties.campo en cada span — queda más limpio en el organismo
+      setErrors(errores.properties);
+
+      return false;
     }
 
     setErrors({});
-    return true; // todo limpio, puedes enviar
+    return true;
   };
 
   // isValid — se usa para deshabilitar el botón en tiempo real
