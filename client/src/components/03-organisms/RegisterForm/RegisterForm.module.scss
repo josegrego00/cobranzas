@@ -1,0 +1,352 @@
+// RegisterForm.module.scss
+// Layout split: panel izquierdo oscuro (hero) + panel derecho claro (form)
+// Tipografía: Sora (headings) + DM Sans (body) — importar en index.html o App.css:
+// @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+// ── Variables ─────────────────────────────────────────────────────
+$accent:       #00c896;
+$accent-dark:  #00a87e;
+$dark-bg:      #060b14;
+$dark-panel:   #0b1120;
+$dark-border:  rgba(255, 255, 255, 0.07);
+$text-primary: #f0f4ff;
+$text-muted:   rgba(240, 244, 255, 0.5);
+$form-bg:      #ffffff;
+$input-border: #e2e8f0;
+$input-focus:  #00c896;
+$error-color:  #f04438;
+$radius:       12px;
+$radius-sm:    8px;
+
+// ── Wrapper — split layout ─────────────────────────────────────────
+.wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ── PANEL IZQUIERDO — hero ─────────────────────────────────────────
+.hero {
+    position: relative;
+    background: $dark-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 48px;
+    overflow: hidden;
+
+    @media (max-width: 900px) {
+        display: none; // se oculta en mobile
+    }
+}
+
+.heroContent {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    max-width: 400px;
+}
+
+// logo
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logoIcon {
+    font-size: 24px;
+    color: $accent;
+    filter: drop-shadow(0 0 8px rgba(0, 200, 150, 0.5));
+}
+
+.logoText {
+    font-family: 'Sora', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: -0.3px;
+}
+
+// tagline
+.tagline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.taglineTitle {
+    font-family: 'Sora', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: $text-primary;
+    letter-spacing: -1px;
+    margin: 0;
+}
+
+.taglineAccent {
+    color: $accent;
+}
+
+.taglineSub {
+    font-size: 15px;
+    line-height: 1.7;
+    color: $text-muted;
+    margin: 0;
+    max-width: 340px;
+}
+
+// social proof
+.socialProof {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatars {
+    display: flex;
+
+    // cada avatar se superpone al anterior
+    span + span {
+        margin-left: -10px;
+    }
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a2f4a, #0f1e30);
+    border: 2px solid $dark-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: $accent;
+    letter-spacing: 0.5px;
+}
+
+.socialProofText {
+    font-size: 13px;
+    color: $text-muted;
+    margin: 0;
+}
+
+// decoración de fondo del hero
+.heroBgCircle1 {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 200, 150, 0.08) 0%, transparent 70%);
+    top: -100px;
+    right: -150px;
+    pointer-events: none;
+}
+
+.heroBgCircle2 {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 100, 200, 0.06) 0%, transparent 70%);
+    bottom: -80px;
+    left: -80px;
+    pointer-events: none;
+}
+
+.heroBgGrid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+
+    // fade hacia los bordes
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+// ── PANEL DERECHO — formulario ─────────────────────────────────────
+.formPanel {
+    background: $form-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 48px;
+
+    @media (max-width: 600px) {
+        padding: 40px 24px;
+    }
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+// header del form
+.formHeader {
+    margin-bottom: 24px;
+}
+
+.formTitle {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    margin: 0 0 8px;
+}
+
+.formSubtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+// wrapper de cada campo + su error
+.fieldWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+// mensaje de error de Zod
+.errorMsg {
+    font-size: 12px;
+    color: $error-color;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &::before {
+        content: '!';
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        background: $error-color;
+        color: white;
+        border-radius: 50%;
+        font-size: 9px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+}
+
+// ── Subdominio ─────────────────────────────────────────────────────
+.subLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.subRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.subInputWrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.subInput {
+    width: 100%;
+    padding: 10px 14px;
+    padding-right: 110px; // espacio para el .tuapp.com
+    background: #f8fafc;
+    border: 1px solid $input-border;
+    border-radius: $radius-sm;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &.subInputConfirmed {
+        border-color: $accent;
+        color: $accent-dark;
+        background: rgba(0, 200, 150, 0.04);
+    }
+}
+
+.subDomain {
+    position: absolute;
+    right: 12px;
+    font-size: 12px;
+    color: #94a3b8;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.acceptBtn {
+    padding: 10px 16px;
+    background: rgba(0, 200, 150, 0.1);
+    border: 1px solid rgba(0, 200, 150, 0.4);
+    border-radius: $radius-sm;
+    color: $accent-dark;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+        background: rgba(0, 200, 150, 0.2);
+        border-color: $accent;
+    }
+}
+
+// estados del subdominio
+.subChecking {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 4px 0 0;
+}
+
+.subError {
+    font-size: 12px;
+    color: $error-color;
+    margin: 4px 0 0;
+}
+
+.subAvailable {
+    font-size: 12px;
+    color: $accent-dark;
+    margin: 4px 0 0;
+    font-weight: 500;
+}
+
+.subConfirmed {
+    font-size: 12px;
+    color: $accent-dark;
+    margin: 4px 0 0;
+    font-weight: 600;
+}
