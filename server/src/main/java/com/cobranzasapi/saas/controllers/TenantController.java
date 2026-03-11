@@ -16,20 +16,34 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/superadmin")
 @RequiredArgsConstructor
-public class EmpresaController {
+public class TenantController {
 
-    private final TenantService empresaService;
+    private final TenantService tenantService;
 
     @PostMapping("/crear-tenant")
     public ResponseEntity<TenantDTO> crearTenant(@RequestBody @Valid TenantDTO request) {
-        TenantDTO creado = empresaService.crearTenant(request);
+        TenantDTO creado = tenantService.crearTenant(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
-    @GetMapping("/empresa/usuarios")
+    @GetMapping("/tenant/usuarios")
     public ResponseEntity<List<UsuarioDTOResponse>> obtenerUsuariosPorEmpresa() {
-        List<UsuarioDTOResponse> usuarios = empresaService.obtenerUsuariosPorEmpresa();
+        List<UsuarioDTOResponse> usuarios = tenantService.obtenerUsuariosPorEmpresa();
         return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/listar-tenants")
+    public ResponseEntity<List<TenantDTO>> obtenerTenants() {
+        List<TenantDTO> tenants = tenantService.obtenerTenants();
+        return ResponseEntity.ok(tenants);
+    }
+
+    @PutMapping("/cambiar-estado-tenant/{id}/estado")
+    public ResponseEntity<TenantDTO> cambiarEstadoTenant(
+            @PathVariable Long id,
+            @RequestParam Boolean activo) {
+        TenantDTO tenant = tenantService.cambiarEstadoTenant(id, activo);
+        return ResponseEntity.ok(tenant);
     }
 
 }
