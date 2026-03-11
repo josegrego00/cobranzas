@@ -65,6 +65,7 @@ public class ManejadorGlobalException {
                 && !ex.getMessage().isEmpty()) {
             message = ex.getMessage();
         }
+        
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 status.value(),

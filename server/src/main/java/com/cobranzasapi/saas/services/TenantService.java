@@ -10,6 +10,7 @@ import com.cobranzasapi.saas.multitenant.TenantContext;
 import com.cobranzasapi.saas.repo.TenantRepositorio;
 import com.cobranzasapi.saas.repo.UsuarioRepositorio;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TenantService {
@@ -81,7 +83,7 @@ public class TenantService {
 
         // Buscar usuarios y convertir a DTO
         List<Usuario> usuarios = usuarioRepositorio.findByTenantId(tenantId);
-        
+
         return usuarios.stream()
                 .map(usuarioMapper::toResponse)
                 .collect(Collectors.toList());
@@ -95,24 +97,12 @@ public class TenantService {
         return tenantMapper.toDTO(tenant);
     }
 
-    @Transactional(readOnly = true)
-    public TenantDTO obtenerMiTenant() {
-        Long tenantId = TenantContext.getTenantId();
-        
-        if (tenantId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "No se pudo identificar el tenant");
-        }
-        
-        return obtenerTenantPorId(tenantId);
-    }
-
     @Transactional
     public TenantDTO actualizarTenant(Long id, TenantDTO request) {
         Tenant tenant = tenantRepositorio.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Tenant no encontrado"));
-        
+
         // Actualizar campos permitidos
         if (request.getNombreTenant() != null) {
             tenant.setNombreTenant(request.getNombreTenant());
@@ -124,8 +114,30 @@ public class TenantService {
             tenant.setPlanServicio(request.getPlanServicio());
         }
         // No permitir actualizar email, subdominio por seguridad
-        
+
         tenant = tenantRepositorio.save(tenant);
+        return tenantMapper.toDTO(tenant);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TenantDTO> obtenerTenants() {
+        List<Tenant> listaTenants = tenantRepositorio.findAll();
+        return tenantMapper.toDTOList(listaTenants);
+    }
+
+    @Transactional
+    public TenantDTO cambiarEstadoTenant(Long id, Boolean activo) {
+        Tenant tenant = tenantRepositorio.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Tenant no encontrado con ID: " + id));
+
+        tenant.setActivo(activo);
+        tenant = tenantRepositorio.save(tenant);
+
+        log.info("Tenant {} {}: {}", tenant.getSubdominio(),
+                activo ? "activado" : "desactivado", id);
+
         return tenantMapper.toDTO(tenant);
     }
 }

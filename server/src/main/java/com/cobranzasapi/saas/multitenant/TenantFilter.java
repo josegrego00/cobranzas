@@ -31,6 +31,8 @@ public class TenantFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.startsWith("/superadmin/crear-tenant") ||
                 path.startsWith("/api/auth/") ||
+                path.startsWith("/superadmin/") ||
+                path.startsWith("/superadmin/cambiar-estado-tenant/**") ||
                 path.startsWith("/api/subdominios/");
     }
 
