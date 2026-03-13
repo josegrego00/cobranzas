@@ -3,6 +3,7 @@ import RegisterForm from "../../03-organisms/RegisterForm/RegisterForm";
 import useAuth from "../../../hooks/useAuth";
 import useValidateSubdomain from "../../../hooks/useValidateSubdomain";
 import useRegisterForm from "../../../hooks/useRegisterForm";
+import { toTenantPayload } from "../../../mappers/tenant.mapper";
 
 // convierte el nombre de la empresa en un subdominio limpio
 // ejemplo: "Acme Corp!" → "acmecorp"
@@ -26,8 +27,8 @@ const RegisterPage = () => {
     });
 
     // estos dos son aparte porque manejan la lógica especial del subdominio
-    const [subdominioConfirmado, setSubdominioConfirmado] = useState(false);
-    const [subdominioSugerido, setSubdominioSugerido]     = useState("");
+    const[subdominioConfirmado, setSubdominioConfirmado] = useState(false);
+    const[subdominioSugerido, setSubdominioSugerido]     = useState("");
 
     // useAuth → habla con la API
     // useValidateSubdomain → verifica si el subdominio ya existe
@@ -40,12 +41,12 @@ const RegisterPage = () => {
     // si el campo es nombreEmpresa, también genera y verifica el subdominio
     const handleChange = (fieldName, value) => {
 
-        // ANTES: setValues((prev) => ({ ...prev, [fieldName]: value }))
+        // ANTES: setValues((prev) => ({ ...prev,[fieldName]: value }))
         // fallaba para la validación en tiempo real porque setValues es asíncrono —
         // si llamábamos validateForm(values) justo después, values todavía tenía el valor viejo
         // AHORA: construimos newValues antes de setValues para tener el valor actualizado
         // disponible de inmediato y pasárselo a validateForm sin esperar el re-render
-        const newValues = { ...values, [fieldName]: value };
+        const newValues = { ...values,[fieldName]: value };
         setValues(newValues);
 
         if (fieldName === "nombreEmpresa") {
@@ -75,10 +76,20 @@ const RegisterPage = () => {
     // antes de enviar, Zod revisa todo en el navegador
     // si hay errores los muestra sin tocar la API
     // solo llega a register() si todo está limpio
-    const handleSubmit = () => {
+    
+    // 🟢 [NUEVO] -> Le agregué el (e) y el preventDefault. 
+    // Si el RegisterForm usa un <form onSubmit={onSubmit}> nativo de HTML, 
+    // esto evita que el navegador recargue la página entera al dar enter.
+    const handleSubmit = (e) => {
+        if (e) e.preventDefault(); 
+
         const formOk = validateForm(values);
         if (!formOk) return;
-        register(values);
+
+        // 🟢[EXPLICACIÓN] -> NO necesito  aun el await aquí 
+        // porque el loading y los errores ya viven dentro de `useAuth`. 
+        // Además, ¡aquí se esta aplicando el  mapper perfectamente!
+        register(toTenantPayload(values));
     };
 
     // el botón se activa solo cuando:
