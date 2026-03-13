@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} TenantDTO          ← contrato del backend al crear
+ * @typedef {Object} TenantDTO
  * @property {string} nombreTenant
  * @property {string} subdominio
  * @property {string} email
@@ -8,7 +8,7 @@
  */
 
 /**
- * @typedef {Object} TenantForm         ← estado interno RegisterPage
+ * @typedef {Object} TenantForm
  * @property {string} nombreEmpresa
  * @property {string} subdominio
  * @property {string} email
@@ -19,20 +19,23 @@
  */
 
 /**
- * @typedef {Object} LoginDTO           ← contrato del backend al login
+ * @typedef {Object} LoginDTO
  * @property {string} email
  * @property {string} password
+ * @property {string} subdominio
  */
 
 /**
- * @typedef {Object} LoginForm          ← estado interno LoginPage
+ * @typedef {Object} LoginForm
  * @property {string} email
  * @property {string} password
+ * @property {string} subdominio
  */
 
 /**
- * @typedef {Object} LoginResponseDTO   ← lo que devuelve el backend
+ * @typedef {Object} LoginResponseDTO
  * @property {string} token
  * @property {string} rol
  * @property {string} subdominio
+ * @property {string} email
  */

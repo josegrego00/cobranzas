@@ -4,7 +4,7 @@
  * @returns {import('../types/tenant.types').TenantDTO}
  */
 export const toTenantPayload = (form) => ({
-  nombreTenant: form.nombreEmpresa,  // única traducción UI → API
+  nombreTenant: form.nombreEmpresa,
   subdominio:   form.subdominio,
   email:        form.email,
   telefono:     form.telefono,
@@ -17,6 +17,7 @@ export const toTenantPayload = (form) => ({
  * @returns {import('../types/tenant.types').LoginDTO}
  */
 export const toLoginPayload = (form) => ({
-  email:    form.email,
-  password: form.password,
+  email:      form.email,
+  password:   form.password,
+  subdominio: form.subdominio,
 });
